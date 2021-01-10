@@ -1,0 +1,52 @@
+---
+title: "ESM 244 Lab 1 Satie"
+author: "Satie Airame"
+date: "1/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(sf)
+library(tmap)
+```
+
+### Read in SF trees data
+
+```{r}
+sf_trees <- read_csv(here("data", "sf_trees", "sf_trees.csv"))
+```
+
+### Basic wrangling reminders
+
+Refresh some skills for data wrangling and summary statistics using functions in the 'dplyr' package.
+Find the top five highest observations of trees by legal_status, do some wrangling, make a graph.
+
+```{r}
+top_5_status <- sf_trees %>% 
+  count(legal_status) %>%  # recognize groups, finding counts, in a table
+  drop_na(legal_status) %>%  # to remove missing values labeled NA
+  rename(tree_count = n) %>% # new name goes on the left, old name on the right
+  relocate(tree_count) %>%  # moves tree_count to first column position
+  slice_max(tree_count, n = 5) # indicate in which colunn to look and the number you want to present, there is also slice_min available
+ 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
