@@ -31,12 +31,46 @@ top_5_status <- sf_trees %>%
   rename(tree_count = n) %>% # new name goes on the left, old name on the right
   relocate(tree_count) %>%  # moves tree_count to first column position
   slice_max(tree_count, n = 5) # indicate in which colunn to look and the number you want to present, there is also slice_min available
- 
+```
+### Make a graph of top five observations by legal status
+
+```{r}
+ggplot(data = top_5_status, aes(x = fct_reorder(legal_status, tree_count), y = tree_count)) + # uce fct_reorder to reorganize data in order of tree_count, alternative to use convert to factor and use fct_reorder
+  geom_col() +
+  labs(x = "Legal Status", y = "Tree Count") +
+  coord_flip() + # flip the axes in case the names are too long on x axis
+  theme_minimal()
+
 ```
 
+### A few more data wrangling refresher examples
+Only keep observations (rows) for Blackwood Acacia Trees
+
+```{r}
+blackwood_acacia <- sf_trees %>% 
+  filter(str_detect(species, "Blackwood Acacia")) %>% # looks within a variable (sf_trees data) that we specify to identify if there are any strings there, does not need to be a complete match, just part of the string
+  select(legal_status, date, latitude, longitude) # pick columns that you want to pick or exclude
+
+ggplot(data = blackwood_acacia, aes(x = longitude, y = latitude)) +
+  geom_point()
+```
+
+### tidyr::separate() and unite() functions
+Useful for combining and separating columns
+
+```{r}
+sf_trees_sep <- sf_trees %>% 
+  separate(species, into =
+c("spp_scientific", "spp_common"), sep = "::") # separate one column into two columns using data within that column, create a vector c with two new columns, then name the separator (::)
+```
+
+Exampe: tidyr::unite()
 
 
-
+```{r}
+sf_trees_unite <- sf_trees %>% 
+  unite("id_status", tree_id:legal_status, sep = "_cool!_") # combine two columns into one and add a separator ("_cool!_"), could use a vector or use a colon, which indicates "from this column to that column"
+```
 
 
 
