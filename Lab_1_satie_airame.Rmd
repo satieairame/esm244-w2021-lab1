@@ -72,11 +72,58 @@ sf_trees_unite <- sf_trees %>%
   unite("id_status", tree_id:legal_status, sep = "_cool!_") # combine two columns into one and add a separator ("_cool!_"), could use a vector or use a colon, which indicates "from this column to that column"
 ```
 
+### Make some actual maps of blackwood acacia trees in SF
 
+'st_as_sf()' to convert latitude and longitude to spatial coordinates
 
+```{r}
+blackwood_acacia_spatial <- blackwood_acacia %>% 
+  drop_na(longitude, latitude) %>% 
+  st_as_sf(coords = c("longitude", "latitude")) # converts longitude and latitude to spatial data, use longitude first, then latitude second
 
+st_crs(blackwood_acacia_spatial) = 4326 # 4-digit code from European Petroleum Survey Group for what the coordinate reference system is.
 
+ggplot(data = blackwood_acacia_spatial) +
+  geom_sf(color = "darkgreen") + 
+  labs(x = "Latitude",
+       y = "Longitude")
+```
 
+### Read in SF roads shapefile
+
+```{r}
+sf_map <- read_sf(here("data", "sf_map", "tl_2017_06075_roads.shp"))
+```
+
+Run in Console: # "st_transform(sf_map)" to look for existing projection information
+There is an existing CSR for the roads shapefile so we need to use st_transform.
+
+```{r}
+st_transform(sf_map, 4326)
+
+ggplot(data = sf_map) +
+  geom_sf()
+```
+
+Combine blackwood acacia tree observations and SF roads map
+
+```{r}
+ggplot() +
+  geom_sf(data = sf_map, size = 0.1, color = "darkgray") +
+  geom_sf(data = blackwood_acacia_spatial, color = "red", size = 0.5) +
+  theme_void()
+```
+
+maybe install leaflet
+
+Now an interactive map:
+```{r}
+tmap_mode("view") # default is "plot" which is static, "view" is interactive
+
+tm_shape(blackwood_acacia_spatial) +
+  tm_dots()
+  
+```
 
 
 
